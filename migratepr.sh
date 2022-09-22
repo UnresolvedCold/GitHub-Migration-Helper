@@ -15,7 +15,7 @@ done
 
 unset input
 while [ -z ${input} ]; do
-    read -p "Enter the location of the new GitHub repo (/home/.../platform): " input
+    read -p "Enter the location of the new GitHub repo (/home/.../greyorange-platform): " input
     GITHUB_REPO_ADDRESS=$input
 done
 
