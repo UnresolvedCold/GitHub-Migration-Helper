@@ -11,9 +11,7 @@ OLD_PR_BRANCH=$(jq -r .old_pr_branch $SCRIPT_DIR/config.json)
 NEW_PR_BRANCH=$(jq -r .new_pr_branch $SCRIPT_DIR/config.json)
 RAISE_PR=$(jq -r .raise_pr $SCRIPT_DIR/config.json)
 PUSH_CHANGES=$(jq -r .push_changes $SCRIPT_DIR/config.json)
-pwd
-echo OLD_REPO: $OLD_REPO
-cd ${OLD_REPO}
+
 REPO_NAME=${PWD##*/}
 
 # Create a patch file from old repo
