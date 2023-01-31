@@ -58,6 +58,7 @@ Below example shows you the configurations for the migration of feature-branch-r
 1. `git am --abort` just to ensure the process is not in the resuem state.
 
 1. Delete the feature branch from the new repo if it's been created in the Guthub repo.
+
     ```bash
     # How to delete?
     cd <new-repo>
