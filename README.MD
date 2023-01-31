@@ -31,7 +31,7 @@ Below are the details,
 | old_pr_branch | This is the branch on which pr was raised in the old repo |
 | new_pr_branch | This is the branch on which you want to raise the PR in new repo |
 
-### Exapmle
+### Example
 
 Below example shows you the configurations for the migration of feature-branch-r1 of r1 which was migrated as a subdirectory to workspace/r1.
 
