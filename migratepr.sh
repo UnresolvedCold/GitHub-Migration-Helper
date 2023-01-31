@@ -1,58 +1,34 @@
-echo "This script helps you to migrate your local commits from old (bitbucket) repo to new (github) repo and raise a pull request."
+set -e
+echo "This script helps you to migrate your local commits from old repo to new repo and raise a pull request (if required)."
 echo "Make sure you don't have any un-commited changes before using this utility."
 
-BITBUCKET_REPO_ADDRESS=
-GITHUB_REPO_ADDRESS=
-FEATURE_BRANCH=
-BITBUCKET_PR_BRANCH=platform
-GITHUB_PR_BRANCH=develop
+SCRIPT_DIR=${CONFIG_DIR:-$(dirname "$0")}
 
-unset input
-while [ -z ${input} ]; do
-    read -p "Enter the location of bitbucket repo (/home/..../workspace/wms-oms): " input
-    BITBUCKET_REPO_ADDRESS=$input
-done
-
-unset input
-while [ -z ${input} ]; do
-    read -p "Enter the location of the new GitHub repo (/home/.../greyorange-platform): " input
-    GITHUB_REPO_ADDRESS=$input
-done
-
-unset input
-while [ -z ${input} ]; do
-    read -p "Feature Branch Name: " input
-    FEATURE_BRANCH=$input
-done
-
-unset input
-read -p "Branch to raise PR as per Bitbucket repo (platform): " input
-
-if [ ! -z ${input} ]; then
-    BITBUCKET_PR_BRANCH=$input
-fi
-
-unset input
-read -p "Branch to raise PR as per Github repo (develop): " input
-
-if [ ! -z ${input} ]; then
-    GITHUB_PR_BRANCH=$input
-fi
-
-cd $BITBUCKET_REPO_ADDRESS
+OLD_REPO=$(jq -r .old_repo_directory $SCRIPT_DIR/config.json)
+NEW_REPO=$(jq -r .new_repo_directory $SCRIPT_DIR/config.json)
+FEATURE_BRANCHES=($(jq -r .feature_branches $SCRIPT_DIR/config.json | tr -d '[],"'))
+OLD_PR_BRANCH=$(jq -r .old_pr_branch $SCRIPT_DIR/config.json)
+NEW_PR_BRANCH=$(jq -r .new_pr_branch $SCRIPT_DIR/config.json)
+RAISE_PR=$(jq -r .raise_pr $SCRIPT_DIR/config.json)
+PUSH_CHANGES=$(jq -r .push_changes $SCRIPT_DIR/config.json)
+pwd
+echo OLD_REPO: $OLD_REPO
+cd ${OLD_REPO}
 REPO_NAME=${PWD##*/}
 
 # Create a patch file from old repo
-git checkout $FEATURE_BRANCH
-git format-patch $BITBUCKET_PR_BRANCH --stdout > ~/gor-gitpatch
+for FEATURE_BRANCH in ${FEATURE_BRANCHES[@]}; do
+    git checkout $FEATURE_BRANCH
+    git format-patch $OLD_PR_BRANCH --stdout > ~/gor-gitpatch
 
-# Apply the patch to new repo
-cd $GITHUB_REPO_ADDRESS
-git checkout -b $FEATURE_BRANCH
-git am --directory $REPO_NAME ~/gor-gitpatch
+    # Apply the patch to new repo
+    cd $NEW_REPO
+    git checkout -b $FEATURE_BRANCH
+    git am --directory $REPO_NAME ~/gor-gitpatch
 
-# Push the changes to Github
-git push --set-upstream origin $FEATURE_BRANCH 
+    # Push the changes to Github
+    [[ $PUSH_CHANGES == true ]] && git push --set-upstream origin $FEATURE_BRANCH 
 
-# Create a pull request
-gh pr create -B $GITHUB_PR_BRANCH
+    # Create a pull request
+    [[ $RAISE_PR == true ]] && gh pr create -B $NEW_PR_BRANCH
+done

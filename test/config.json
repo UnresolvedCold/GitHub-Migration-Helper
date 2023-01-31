@@ -1,0 +1,11 @@
+{
+    "old_repo_directory": "/Users/shubham.kumar/Documents/Projects/GreyOrange/GitHub-Platform-Migration-Helper/test/mocks/r1",
+    "new_repo_directory": "/Users/shubham.kumar/Documents/Projects/GreyOrange/GitHub-Platform-Migration-Helper/test/mocks/workspace",
+    "feature_branches": [
+        "feature-branch-r1"
+    ],
+    "push_changes": false,
+    "raise_pr": false,
+    "old_pr_branch": "master",
+    "new_pr_branch": "master"
+}
